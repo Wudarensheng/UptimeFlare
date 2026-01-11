@@ -95,6 +95,16 @@ const workerConfig: WorkerConfig = {
       expectedCodes: [200],
       timeout: 10000,
     },
+    {
+      id: 'uptimeflare',
+      name: 'UptimeFlare监控',
+      method: 'HEAD',
+      target: 'https://uptime.wudarensheng.top/',
+      statusPageLink: 'https://uptime.wudarensheng.top/',
+      hideLatencyChart: false,
+      expectedCodes: [200],
+      timeout: 10000,
+    },
 
   ],
   notification: {
