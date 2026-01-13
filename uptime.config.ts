@@ -105,6 +105,16 @@ const workerConfig: WorkerConfig = {
       expectedCodes: [200],
       timeout: 10000,
     },
+    {
+      id: 'openlist_us',
+      name: 'Openlist（美国）',
+      method: 'HEAD',
+      target: 'https://pan.wudarensheng.top/',
+      statusPageLink: 'https://pan.wudarensheng.top/',
+      hideLatencyChart: false,
+      expectedCodes: [200],
+      timeout: 10000,
+    },
 
   ],
   notification: {
