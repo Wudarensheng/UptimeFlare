@@ -55,7 +55,7 @@ const workerConfig: WorkerConfig = {
     // },
     {
       id: 'uptimekuma',
-      name: 'UptimeKuma',
+      name: 'UptimeKuma（已报废）',
       method: 'HEAD',
       target: 'https://status.wudarensheng.top/status/status',
       statusPageLink: 'https://status.wudarensheng.top/status/status',
@@ -87,7 +87,7 @@ const workerConfig: WorkerConfig = {
     
     {
       id: 'onedrive_index',
-      name: 'OneDrive 公开只读（Vercel）',
+      name: 'OneDrive 公开只读（Vercel）（已报废）',
       method: 'HEAD',
       target: 'https://share.wudarensheng.top/',
       statusPageLink: 'https://share.wudarensheng.top/',
@@ -107,12 +107,12 @@ const workerConfig: WorkerConfig = {
     },
     {
       id: 'openlist_us',
-      name: 'Openlist（美国）',
+      name: 'Openlist（美国）（已迁移至ClawCloud）',
       method: 'HEAD',
       target: 'https://pan.wudarensheng.top/',
       statusPageLink: 'https://pan.wudarensheng.top/',
       hideLatencyChart: false,
-      expectedCodes: [405],
+      expectedCodes: [200],
       timeout: 10000,
     },
 
