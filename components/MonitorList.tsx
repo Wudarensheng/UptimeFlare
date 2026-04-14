@@ -1,9 +1,10 @@
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { Accordion, Card, Center, Text } from '@mantine/core'
+import { Card, Center, Text, Accordion } from '@mantine/core'
 import MonitorDetail from './MonitorDetail'
 import { pageConfig } from '@/uptime.config'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { IconChevronDown } from '@tabler/icons-react'
 
 function countDownCount(state: MonitorState, ids: string[]) {
   let downCount = 0
@@ -24,9 +25,9 @@ function getStatusTextColor(state: MonitorState, ids: string[]) {
   if (downCount === 0) {
     return '#059669'
   } else if (downCount === ids.length) {
-    return '#df484a'
+    return '#ef4444'
   } else {
-    return '#f29030'
+    return '#f59e0b'
   }
 }
 
@@ -40,7 +41,6 @@ export default function MonitorList({
   const { t } = useTranslation('common')
   const group = pageConfig.group
   const groupedMonitor = group && Object.keys(group).length > 0
-  let content
 
   // Load expanded groups from localStorage
   const savedExpandedGroups = localStorage.getItem('expandedGroups')
@@ -52,82 +52,74 @@ export default function MonitorList({
     localStorage.setItem('expandedGroups', JSON.stringify(expandedGroups))
   }, [expandedGroups])
 
+  const renderMonitors = (monitorIds: string[]) => {
+    return monitors
+      .filter((monitor) => monitorIds.includes(monitor.id))
+      .sort((a, b) => monitorIds.indexOf(a.id) - monitorIds.indexOf(b.id))
+      .map((monitor) => (
+        <MonitorDetail key={monitor.id} monitor={monitor} state={state} />
+      ))
+  }
+
+  let content
+
   if (groupedMonitor) {
     // Grouped monitors
     content = (
-      <Accordion
-        multiple
-        defaultValue={Object.keys(group)}
-        variant="contained"
-        value={expandedGroups}
-        onChange={(values) => setExpandedGroups(values)}
-      >
-        {Object.keys(group).map((groupName) => (
-          <Accordion.Item key={groupName} value={groupName}>
-            <Accordion.Control>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  alignItems: 'center',
-                }}
-              >
-                <div>{groupName}</div>
-                <Text
-                  fw={500}
-                  style={{
-                    display: 'inline',
-                    paddingRight: '5px',
-                    color: getStatusTextColor(state, group[groupName]),
-                  }}
-                >
-                  {group[groupName].length - countDownCount(state, group[groupName])}/
-                  {group[groupName].length} {t('Operational')}
-                </Text>
-              </div>
-            </Accordion.Control>
-            <Accordion.Panel>
-              {monitors
-                .filter((monitor) => group[groupName].includes(monitor.id))
-                .sort((a, b) => group[groupName].indexOf(a.id) - group[groupName].indexOf(b.id))
-                .map((monitor) => (
-                  <div key={monitor.id}>
-                    <Card.Section ml="xs" mr="xs">
-                      <MonitorDetail monitor={monitor} state={state} />
-                    </Card.Section>
+      <div className="accordion-group">
+        <Accordion
+          multiple
+          defaultValue={Object.keys(group)}
+          variant="contained"
+          value={expandedGroups}
+          onChange={(values) => setExpandedGroups(values)}
+          chevron={<IconChevronDown size={20} />}
+        >
+          {Object.keys(group).map((groupName) => (
+            <Accordion.Item key={groupName} value={groupName} className="accordion-item">
+              <Accordion.Control className="accordion-control">
+                <div className="group-section" style={{ margin: 0, padding: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 className="group-title" style={{ margin: 0 }}>{groupName}</h2>
+                    <Text
+                      fw={500}
+                      style={{
+                        display: 'inline',
+                        color: getStatusTextColor(state, group[groupName]),
+                      }}
+                    >
+                      {group[groupName].length - countDownCount(state, group[groupName])}/
+                      {group[groupName].length} {t('Operational')}
+                    </Text>
                   </div>
-                ))}
-            </Accordion.Panel>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+                </div>
+              </Accordion.Control>
+              <Accordion.Panel className="accordion-panel">
+                <div className="monitor-card">
+                  {renderMonitors(group[groupName])}
+                </div>
+              </Accordion.Panel>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      </div>
     )
   } else {
     // Ungrouped monitors
-    content = monitors.map((monitor) => (
-      <div key={monitor.id}>
-        <Card.Section ml="xs" mr="xs">
-          <MonitorDetail monitor={monitor} state={state} />
-        </Card.Section>
+    content = (
+      <div className="monitor-card" style={{ maxWidth: '1024px', margin: '0 auto' }}>
+        {monitors.map((monitor) => (
+          <MonitorDetail key={monitor.id} monitor={monitor} state={state} />
+        ))}
       </div>
-    ))
+    )
   }
 
   return (
     <Center>
-      <Card
-        shadow="sm"
-        padding="lg"
-        radius="md"
-        ml="md"
-        mr="md"
-        mt="xl"
-        withBorder={!groupedMonitor}
-        style={{ width: groupedMonitor ? '897px' : '865px' }}
-      >
+      <div style={{ width: '100%', maxWidth: '1024px', padding: '0 1rem' }}>
         {content}
-      </Card>
+      </div>
     </Center>
   )
 }

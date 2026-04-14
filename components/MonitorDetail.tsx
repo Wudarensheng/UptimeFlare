@@ -18,43 +18,44 @@ export default function MonitorDetail({
 
   if (!state.latency[monitor.id])
     return (
-      <>
-        <Text mt="sm" fw={700}>
-          {monitor.name}
-        </Text>
-        <Text mt="sm" fw={700}>
-          {t('No data available')}
-        </Text>
-      </>
+      <div className="monitor-item">
+        <div className="monitor-info">
+          <div className="monitor-header">
+            <div className="status-dot offline" />
+            <span className="monitor-name">{monitor.name}</span>
+          </div>
+          <Text mt="sm" fw={700}>
+            {t('No data available')}
+          </Text>
+        </div>
+      </div>
     )
 
-  let statusIcon =
-    state.incident[monitor.id].slice(-1)[0].end === undefined ? (
-      <IconAlertCircle
-        style={{ width: '1.25em', height: '1.25em', color: '#b91c1c', marginRight: '3px' }}
-      />
-    ) : (
-      <IconCircleCheck
-        style={{ width: '1.25em', height: '1.25em', color: '#059669', marginRight: '3px' }}
-      />
-    )
+  let statusClass = 'online'
+  let statusDotClass = 'status-dot online'
+  let IconComponent = IconCircleCheck
+
+  const isDown = state.incident[monitor.id].slice(-1)[0].end === undefined
 
   // Hide real status icon if monitor is in maintenance
   const now = new Date()
   const hasMaintenance = maintenances
     .filter((m) => now >= new Date(m.start) && (!m.end || now <= new Date(m.end)))
     .find((maintenance) => maintenance.monitors?.includes(monitor.id))
-  if (hasMaintenance)
-    statusIcon = (
-      <IconAlertTriangle
-        style={{
-          width: '1.25em',
-          height: '1.25em',
-          color: '#fab005',
-          marginRight: '3px',
-        }}
-      />
-    )
+
+  if (hasMaintenance) {
+    statusClass = 'maintenance'
+    statusDotClass = 'status-dot maintenance'
+    IconComponent = IconAlertTriangle
+  } else if (isDown) {
+    statusClass = 'offline'
+    statusDotClass = 'status-dot offline'
+    IconComponent = IconAlertCircle
+  } else {
+    statusClass = 'online'
+    statusDotClass = 'status-dot online'
+    IconComponent = IconCircleCheck
+  }
 
   let totalTime = Date.now() / 1000 - state.incident[monitor.id][0].start[0]
   let downTime = 0
@@ -63,42 +64,46 @@ export default function MonitorDetail({
   }
 
   const uptimePercent = (((totalTime - downTime) / totalTime) * 100).toPrecision(4)
+  const uptimeColor = getColor(uptimePercent, true)
 
   // Conditionally render monitor name with or without hyperlink based on monitor.url presence
   const monitorNameElement = (
-    <Text mt="sm" fw={700} style={{ display: 'inline-flex', alignItems: 'center' }}>
+    <span className="monitor-name">
       {monitor.statusPageLink ? (
-        <a
-          href={monitor.statusPageLink}
-          target="_blank"
-          style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit' }}
-        >
-          {statusIcon} {monitor.name}
+        <a href={monitor.statusPageLink} target="_blank" rel="noopener noreferrer">
+          {monitor.name}
         </a>
       ) : (
-        <>
-          {statusIcon} {monitor.name}
-        </>
+        monitor.name
       )}
-    </Text>
+    </span>
   )
 
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {monitor.tooltip ? (
-          <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
-        ) : (
-          monitorNameElement
-        )}
-
-        <Text mt="sm" fw={700} style={{ display: 'inline', color: getColor(uptimePercent, true) }}>
-          {t('Overall', { percent: uptimePercent })}
-        </Text>
+    <div className="monitor-item">
+      <div className="monitor-info">
+        <div className="monitor-header">
+          <div className={statusDotClass} />
+          {monitor.tooltip ? (
+            <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
+          ) : (
+            monitorNameElement
+          )}
+        </div>
+        <div className="monitor-tags">
+          <span className={`tag tag-${uptimeColor === '#059669' ? 'green' : uptimeColor === '#ef4444' ? 'red' : 'yellow'}`}>
+            {t('uptime', { percent: uptimePercent })}
+          </span>
+        </div>
       </div>
-
-      <DetailBar monitor={monitor} state={state} />
-      {!monitor.hideLatencyChart && <DetailChart monitor={monitor} state={state} />}
-    </>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <DetailBar monitor={monitor} state={state} />
+      </div>
+      {!monitor.hideLatencyChart && (
+        <div className="latency-chart">
+          <DetailChart monitor={monitor} state={state} />
+        </div>
+      )}
+    </div>
   )
 }

@@ -1,5 +1,5 @@
 import { MaintenanceConfig, MonitorTarget } from '@/types/config'
-import { Center, Container, Title, Collapse, Button, Box } from '@mantine/core'
+import { Container, Title, Collapse, Box } from '@mantine/core'
 import { IconCircleCheck, IconAlertCircle, IconPlus, IconMinus } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import MaintenanceAlert from './MaintenanceAlert'
@@ -30,19 +30,28 @@ export default function OverallStatus({
   let groupedMonitor = (group && Object.keys(group).length > 0) || false
 
   let statusString = ''
-  let icon = <IconAlertCircle style={{ width: 64, height: 64, color: '#b91c1c' }} />
+  let statusClass = 'success'
+  let IconComponent = IconCircleCheck
+
   if (state.overallUp === 0 && state.overallDown === 0) {
     statusString = t('No data yet')
+    statusClass = 'warning'
+    IconComponent = IconAlertCircle
   } else if (state.overallUp === 0) {
     statusString = t('All systems not operational')
+    statusClass = 'danger'
+    IconComponent = IconAlertCircle
   } else if (state.overallDown === 0) {
     statusString = t('All systems operational')
-    icon = <IconCircleCheck style={{ width: 64, height: 64, color: '#059669' }} />
+    statusClass = 'success'
+    IconComponent = IconCircleCheck
   } else {
     statusString = t('Some systems not operational', {
       down: state.overallDown,
       total: state.overallUp + state.overallDown,
     })
+    statusClass = 'warning'
+    IconComponent = IconAlertCircle
   }
 
   const [openTime] = useState(Math.round(Date.now() / 1000))
@@ -86,22 +95,26 @@ export default function OverallStatus({
     }))
 
   return (
-    <Container size="md" mt="xl">
-      <Center>{icon}</Center>
-      <Title mt="sm" style={{ textAlign: 'center' }} order={1}>
-        {statusString}
-      </Title>
-      <Title mt="sm" style={{ textAlign: 'center', color: '#70778c' }} order={5}>
+    <>
+      <div className="overall-status-card">
+        <IconComponent
+          className={`overall-status-icon ${statusClass}`}
+          style={{ width: 28, height: 28 }}
+        />
+        <span className={`overall-status-text ${statusClass}`}>{statusString}</span>
+      </div>
+
+      <div className="last-updated">
         {t('Last updated on', {
           date: new Date(state.lastUpdate * 1000).toLocaleString(),
           seconds: currentTime - state.lastUpdate,
         })}
-      </Title>
+      </div>
 
       {/* Upcoming Maintenance */}
       {upcomingMaintenances.length > 0 && (
         <>
-          <Title mt="4px" style={{ textAlign: 'center', color: '#70778c' }} order={5}>
+          <Title mt="4px" style={{ textAlign: 'center', color: '#70778c', fontSize: '0.875rem' }} order={5}>
             {t('upcoming maintenance', { count: upcomingMaintenances.length })}{' '}
             <span
               style={{ textDecoration: 'underline', cursor: 'pointer' }}
@@ -116,7 +129,7 @@ export default function OverallStatus({
               <MaintenanceAlert
                 key={`upcoming-${idx}`}
                 maintenance={maintenance}
-                style={{ maxWidth: groupedMonitor ? '897px' : '865px' }}
+                style={{ maxWidth: groupedMonitor ? '1024px' : '1024px' }}
                 upcoming
               />
             ))}
@@ -129,9 +142,9 @@ export default function OverallStatus({
         <MaintenanceAlert
           key={`active-${idx}`}
           maintenance={maintenance}
-          style={{ maxWidth: groupedMonitor ? '897px' : '865px' }}
+          style={{ maxWidth: groupedMonitor ? '1024px' : '1024px' }}
         />
       ))}
-    </Container>
+    </>
   )
 }

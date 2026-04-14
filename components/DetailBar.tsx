@@ -73,6 +73,19 @@ export default function DetailBar({
     }
 
     const dayPercent = (((dayMonitorTime - dayDownTime) / dayMonitorTime) * 100).toPrecision(4)
+    const barColor = getColor(dayPercent, false)
+    
+    // Map color to class
+    let barClass = 'uptime-bar '
+    if (Number.isNaN(Number(dayPercent))) {
+      barClass += 'no-data'
+    } else if (barColor === '#059669' || barColor.includes('059669')) {
+      barClass += 'success'
+    } else if (barColor === '#ef4444' || barColor.includes('ef4444') || barColor.includes('b91c1c')) {
+      barClass += 'danger'
+    } else {
+      barClass += 'warning'
+    }
 
     uptimePercentBars.push(
       <Tooltip
@@ -102,14 +115,7 @@ export default function DetailBar({
         }
       >
         <div
-          style={{
-            height: '20px',
-            width: '7px',
-            background: getColor(dayPercent, false),
-            borderRadius: '2px',
-            marginLeft: '1px',
-            marginRight: '1px',
-          }}
+          className={barClass}
           onClick={() => {
             if (dayDownTime > 0) {
               setModalTitle(
@@ -144,12 +150,7 @@ export default function DetailBar({
         {modelContent}
       </Modal>
       <Box
-        style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          marginTop: '10px',
-          marginBottom: '5px',
-        }}
+        className="uptime-bars-container"
         visibleFrom="540"
         ref={barRef}
       >
