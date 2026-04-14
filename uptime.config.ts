@@ -53,16 +53,7 @@ const workerConfig: WorkerConfig = {
     //   // 设置此值之前请参考文档 https://github.com/lyc8503/UptimeFlare/wiki/Geo-specific-checks-setup
     //   //checkLocationWorkerRoute: 'https://xxx.example.com',
     // },
-    {
-      id: 'uptimekuma',
-      name: 'UptimeKuma（已报废）',
-      method: 'HEAD',
-      target: 'https://status.wudarensheng.top/status/status',
-      statusPageLink: 'https://status.wudarensheng.top/status/status',
-      hideLatencyChart: false,
-      expectedCodes: [200],
-      timeout: 10000,
-    },
+    
     {
       id: 'blogcf',
       name: '博客 -Cloudflare',
@@ -85,16 +76,6 @@ const workerConfig: WorkerConfig = {
       timeout: 10000,
     },
     
-    {
-      id: 'onedrive_index',
-      name: 'OneDrive 公开只读（Vercel）（已报废）',
-      method: 'HEAD',
-      target: 'https://share.wudarensheng.top/',
-      statusPageLink: 'https://share.wudarensheng.top/',
-      hideLatencyChart: false,
-      expectedCodes: [200],
-      timeout: 10000,
-    },
     {
       id: 'uptimeflare',
       name: 'UptimeFlare监控',
