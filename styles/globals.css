@@ -190,38 +190,6 @@ body {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
-/* 状态柱状条容器 */
-.status-bars-container {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-/* 单个状态柱状条 */
-.status-bar {
-  width: 4px;
-  height: 20px;
-  border-radius: 2px;
-  transition: transform 0.15s ease;
-}
-
-.status-bar:hover {
-  transform: scaleY(1.1);
-}
-
-.status-bar.online {
-  background: var(--success-color);
-}
-
-.status-bar.offline {
-  background: var(--danger-color);
-}
-
-.status-bar.maintenance {
-  background: var(--warning-color);
-}
-
 .monitor-name {
   font-size: 1rem;
   font-weight: 600;
@@ -469,6 +437,53 @@ body {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--border-color);
+}
+
+/* 新的响应时间图表样式 */
+.latency-chart-container {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.status-bars-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+}
+
+.status-indicator-bar {
+  width: 8px;
+  height: 100%;
+  border-radius: 9999px;
+  transition: transform 0.15s ease;
+}
+
+.status-indicator-bar:hover {
+  transform: scaleY(1.1);
+}
+
+.status-indicator-bar.online {
+  background: #16a34a;
+}
+
+.status-indicator-bar.offline {
+  background: #ef4444;
+}
+
+.time-labels-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.time-label {
+  color: #9ca3af;
+  font-size: 0.875rem;
 }
 
 /* Time labels */

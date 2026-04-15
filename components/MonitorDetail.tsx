@@ -7,16 +7,6 @@ import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
 import { useTranslation } from 'react-i18next'
 
-// 状态柱状条组件
-function StatusBars({ statusClass }: { statusClass: string }) {
-  // 生成24个柱状条
-  const bars = Array.from({ length: 24 }, (_, i) => (
-    <div key={i} className={`status-bar ${statusClass}`} />
-  ))
-
-  return <div className="status-bars-container">{bars}</div>
-}
-
 export default function MonitorDetail({
   monitor,
   state,
@@ -31,7 +21,7 @@ export default function MonitorDetail({
       <div className="monitor-item">
         <div className="monitor-info">
           <div className="monitor-header">
-            <StatusBars statusClass="offline" />
+            <div className="status-dot offline" />
             <span className="monitor-name">{monitor.name}</span>
           </div>
           <Text mt="sm" fw={700}>
@@ -93,7 +83,7 @@ export default function MonitorDetail({
     <div className="monitor-item">
       <div className="monitor-info">
         <div className="monitor-header">
-          <StatusBars statusClass={statusClass} />
+          <div className={statusDotClass} />
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
           ) : (
