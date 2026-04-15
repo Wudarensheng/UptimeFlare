@@ -1,32 +1,19 @@
-import { Line } from 'react-chartjs-2'
+import { Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip as ChartTooltip,
   Legend,
   TimeScale,
-  Filler,
 } from 'chart.js'
 import 'chartjs-adapter-moment'
 import { MonitorState, MonitorTarget } from '@/types/config'
-import { codeToCountry } from '@/util/iata'
 import { useTranslation } from 'react-i18next'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  ChartTooltip,
-  Legend,
-  TimeScale,
-  Filler
-)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend, TimeScale)
 
 export default function DetailChart({
   monitor,
@@ -36,25 +23,39 @@ export default function DetailChart({
   state: MonitorState
 }) {
   const { t } = useTranslation('common')
-  const latencyData = state.latency[monitor.id].map((point) => ({
-    x: point.time * 1000,
-    y: point.ping,
-    loc: point.loc,
-  }))
 
-  const uniqueLocations = Array.from(new Set(state.latency[monitor.id].map((p) => p.loc)))
+  const currentTime = Math.round(Date.now() / 1000)
+  const incidents = state.incident[monitor.id]
+  const isCurrentlyDown = incidents.slice(-1)[0].end === undefined
+
+  const last90Minutes = []
+  for (let i = 89; i >= 0; i--) {
+    const timePoint = currentTime - i * 60
+    let isDown = false
+
+    for (const incident of incidents) {
+      const incidentStart = incident.start[0]
+      const incidentEnd = incident.end ?? currentTime
+      if (timePoint >= incidentStart && timePoint < incidentEnd) {
+        isDown = true
+        break
+      }
+    }
+
+    last90Minutes.push({
+      x: timePoint * 1000,
+      y: isDown ? 0 : 1,
+      isDown,
+    })
+  }
 
   let data = {
     datasets: [
       {
-        data: latencyData,
-        borderColor: '#ffffff',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderWidth: 2,
-        radius: 0,
-        cubicInterpolationMode: 'monotone' as const,
-        tension: 0.4,
-        fill: true,
+        data: last90Minutes,
+        backgroundColor: last90Minutes.map((point) => (point.isDown ? '#ef4444' : '#22c55e')),
+        borderRadius: 2,
+        barThickness: 6,
       },
     ],
   }
@@ -62,25 +63,9 @@ export default function DetailChart({
   let options = {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    animation: {
-      duration: 0,
-    },
     plugins: {
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        callbacks: {
-          label: (item: any) => {
-            if (item.parsed.y) {
-              return `${item.parsed.y}ms (${codeToCountry(item.raw.loc)})`
-            }
-          },
-        },
+        enabled: false,
       },
       legend: {
         display: false,
@@ -105,16 +90,26 @@ export default function DetailChart({
           source: 'auto' as const,
           maxRotation: 0,
           autoSkip: true,
+          maxTicksLimit: 6,
           color: 'rgba(255, 255, 255, 0.6)',
+        },
+        border: {
+          display: false,
         },
       },
       y: {
+        display: false,
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          display: false,
         },
         ticks: {
-          color: 'rgba(255, 255, 255, 0.6)',
+          display: false,
         },
+        border: {
+          display: false,
+        },
+        min: 0,
+        max: 1,
       },
     },
   }
@@ -122,36 +117,45 @@ export default function DetailChart({
   return (
     <div
       style={{
-        height: '150px',
+        height: '80px',
         background: 'linear-gradient(180deg, #4a90d9 0%, #2c5f9e 100%)',
         borderRadius: '8px',
         padding: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
-      <Line options={options} data={data} />
-      <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'center' }}>
-        {uniqueLocations.slice(0, 6).map((loc) => (
+      <Bar options={options} data={data} />
+      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '4px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            color: '#ffffff',
+            fontSize: '11px',
+          }}
+        >
           <div
-            key={loc}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#ffffff',
-              fontSize: '11px',
-            }}
-          >
-            <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#ffffff',
-              }}
-            />
-            {loc}
-          </div>
-        ))}
+            style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: '#22c55e' }}
+          />
+          {t('Operational')}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            color: '#ffffff',
+            fontSize: '11px',
+          }}
+        >
+          <div
+            style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: '#ef4444' }}
+          />
+          {t('Downtime')}
+        </div>
       </div>
     </div>
   )
