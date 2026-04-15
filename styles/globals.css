@@ -190,6 +190,38 @@ body {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
+/* 状态柱状条容器 */
+.status-bars-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* 单个状态柱状条 */
+.status-bar {
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  transition: transform 0.15s ease;
+}
+
+.status-bar:hover {
+  transform: scaleY(1.1);
+}
+
+.status-bar.online {
+  background: var(--success-color);
+}
+
+.status-bar.offline {
+  background: var(--danger-color);
+}
+
+.status-bar.maintenance {
+  background: var(--warning-color);
+}
+
 .monitor-name {
   font-size: 1rem;
   font-weight: 600;
