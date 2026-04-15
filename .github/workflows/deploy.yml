@@ -57,9 +57,21 @@ jobs:
         run: |
           npx @cloudflare/next-on-pages
 
-      - name: Create D1 database and tables
+      - name: Get D1 database ID
         run: |
-          python3 deploy/init_d1.py  # This sets D1_ID in GITHUB_ENV
+          # Fetch D1 database ID from existing database
+          D1_RESPONSE=$(curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database?per_page=1000" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
+          
+          D1_ID=$(echo "$D1_RESPONSE" | jq -r '.result[] | select(.name == "uptimeflare_d1") | .uuid')
+          
+          if [[ -z "$D1_ID" || "$D1_ID" == "null" ]]; then
+            echo "D1 database 'uptimeflare_d1' not found. Please create it manually in Cloudflare Dashboard first."
+            exit 1
+          fi
+          
+          echo "Found D1 database ID: $D1_ID"
+          echo "D1_ID=$D1_ID" >> $GITHUB_ENV
 
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
