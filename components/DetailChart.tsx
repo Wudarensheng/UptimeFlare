@@ -24,38 +24,18 @@ export default function DetailChart({
 }) {
   const { t } = useTranslation('common')
 
-  const currentTime = Math.round(Date.now() / 1000)
-  const incidents = state.incident[monitor.id]
-  const isCurrentlyDown = incidents.slice(-1)[0].end === undefined
-
-  const last90Minutes = []
-  for (let i = 89; i >= 0; i--) {
-    const timePoint = currentTime - i * 60
-    let isDown = false
-
-    for (const incident of incidents) {
-      const incidentStart = incident.start[0]
-      const incidentEnd = incident.end ?? currentTime
-      if (timePoint >= incidentStart && timePoint < incidentEnd) {
-        isDown = true
-        break
-      }
-    }
-
-    last90Minutes.push({
-      x: timePoint * 1000,
-      y: isDown ? 0 : 1,
-      isDown,
-    })
-  }
+  const latencyData = state.latency[monitor.id].map((point) => ({
+    x: point.time * 1000,
+    y: point.ping,
+  }))
 
   let data = {
     datasets: [
       {
-        data: last90Minutes,
-        backgroundColor: last90Minutes.map((point) => (point.isDown ? '#ef4444' : '#22c55e')),
-        borderRadius: 2,
-        barThickness: 6,
+        data: latencyData,
+        backgroundColor: latencyData.map((point) => (point.y > 1000 ? '#ef4444' : '#22c55e')),
+        borderRadius: 3,
+        barThickness: 8,
       },
     ],
   }
@@ -65,7 +45,21 @@ export default function DetailChart({
     maintainAspectRatio: false,
     plugins: {
       tooltip: {
-        enabled: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        callbacks: {
+          title: (items: any) => {
+            if (items[0]) {
+              const date = new Date(items[0].parsed.x)
+              return date.toLocaleString()
+            }
+            return ''
+          },
+          label: (item: any) => {
+            return `${item.parsed.y} ms`
+          },
+        },
       },
       legend: {
         display: false,
@@ -98,65 +92,35 @@ export default function DetailChart({
         },
       },
       y: {
-        display: false,
         grid: {
-          display: false,
+          color: 'rgba(255, 255, 255, 0.1)',
         },
         ticks: {
-          display: false,
+          color: 'rgba(255, 255, 255, 0.6)',
+          callback: (value: any) => `${value}ms`,
         },
         border: {
           display: false,
         },
-        min: 0,
-        max: 1,
+        beginAtZero: true,
       },
+    },
+    onClick: (_event: any, elements: any) => {
+      if (elements.length > 0) {
+      }
     },
   }
 
   return (
     <div
       style={{
-        height: '80px',
+        height: '150px',
         background: 'linear-gradient(180deg, #4a90d9 0%, #2c5f9e 100%)',
         borderRadius: '8px',
         padding: '12px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
       }}
     >
       <Bar options={options} data={data} />
-      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '4px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: '#ffffff',
-            fontSize: '11px',
-          }}
-        >
-          <div
-            style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: '#22c55e' }}
-          />
-          {t('Operational')}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: '#ffffff',
-            fontSize: '11px',
-          }}
-        >
-          <div
-            style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: '#ef4444' }}
-          />
-          {t('Downtime')}
-        </div>
-      </div>
     </div>
   )
 }
