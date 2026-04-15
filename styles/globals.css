@@ -287,21 +287,21 @@ body {
 /* Uptime bars */
 .uptime-bars-container {
   display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 32px;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
 }
 
 .uptime-bar {
-  width: 4px;
+  width: 6px;
   height: 100%;
-  border-radius: 2px;
+  border-radius: 9999px;
   transition: transform 0.15s ease;
   cursor: pointer;
 }
 
 .uptime-bar:hover {
-  transform: scaleY(1.1);
+  transform: scaleY(1.15);
 }
 
 .uptime-bar.success {
