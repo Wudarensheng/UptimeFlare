@@ -42,7 +42,7 @@ export default function DetailChart({
     loc: point.loc,
   }))
 
-  const uniqueLocations = [...new Set(state.latency[monitor.id].map((p) => p.loc))]
+  const uniqueLocations = Array.from(new Set(state.latency[monitor.id].map((p) => p.loc)))
 
   let data = {
     datasets: [
