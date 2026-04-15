@@ -9,6 +9,7 @@ import {
   Tooltip as ChartTooltip,
   Legend,
   TimeScale,
+  Filler,
 } from 'chart.js'
 import 'chartjs-adapter-moment'
 import { MonitorState, MonitorTarget } from '@/types/config'
@@ -23,7 +24,8 @@ ChartJS.register(
   Title,
   ChartTooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler
 )
 
 export default function DetailChart({
@@ -40,15 +42,19 @@ export default function DetailChart({
     loc: point.loc,
   }))
 
+  const uniqueLocations = [...new Set(state.latency[monitor.id].map((p) => p.loc))]
+
   let data = {
     datasets: [
       {
         data: latencyData,
-        borderColor: 'rgb(112, 119, 140)',
+        borderColor: '#ffffff',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         borderWidth: 2,
         radius: 0,
         cubicInterpolationMode: 'monotone' as const,
         tension: 0.4,
+        fill: true,
       },
     ],
   }
@@ -65,6 +71,9 @@ export default function DetailChart({
     },
     plugins: {
       tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
         callbacks: {
           label: (item: any) => {
             if (item.parsed.y) {
@@ -79,24 +88,71 @@ export default function DetailChart({
       title: {
         display: true,
         text: t('Response times'),
+        color: '#ffffff',
         align: 'start' as const,
+        font: {
+          size: 12,
+        },
       },
     },
     scales: {
       x: {
         type: 'time' as const,
+        grid: {
+          display: false,
+        },
         ticks: {
           source: 'auto' as const,
           maxRotation: 0,
           autoSkip: true,
+          color: 'rgba(255, 255, 255, 0.6)',
+        },
+      },
+      y: {
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+        ticks: {
+          color: 'rgba(255, 255, 255, 0.6)',
         },
       },
     },
   }
 
   return (
-    <div style={{ height: '150px' }}>
+    <div
+      style={{
+        height: '150px',
+        background: 'linear-gradient(180deg, #4a90d9 0%, #2c5f9e 100%)',
+        borderRadius: '8px',
+        padding: '12px',
+      }}
+    >
       <Line options={options} data={data} />
+      <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'center' }}>
+        {uniqueLocations.slice(0, 6).map((loc) => (
+          <div
+            key={loc}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#ffffff',
+              fontSize: '11px',
+            }}
+          >
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: '#ffffff',
+              }}
+            />
+            {loc}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
