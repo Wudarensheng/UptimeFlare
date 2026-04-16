@@ -460,20 +460,125 @@ body {
   width: 8px;
   height: 100%;
   border-radius: 9999px;
-  transition: transform 0.15s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom;
+  position: relative;
+  overflow: hidden;
 }
 
 .status-indicator-bar:hover {
-  transform: scaleY(1.1);
+  transform: scaleY(1.15) translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-indicator-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.status-indicator-bar:hover::before {
+  opacity: 1;
 }
 
 .status-indicator-bar.online {
   background: #16a34a;
+  animation: pulse-green 2s ease-in-out infinite;
 }
 
 .status-indicator-bar.offline {
   background: #ef4444;
+  animation: pulse-red 2s ease-in-out infinite;
 }
+
+/* 添加脉冲动画效果 */
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+  }
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  }
+}
+
+/* 添加加载动画 */
+.status-bars-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+  animation: slide-in 0.5s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 添加柱状条出现动画 */
+.status-indicator-bar {
+  animation: bar-appear 0.6s ease-out backwards;
+}
+
+@keyframes bar-appear {
+  from {
+    opacity: 0;
+    transform: scaleY(0.3) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+  }
+}
+
+/* 为每个柱状条添加延迟动画 */
+.status-indicator-bar:nth-child(1) { animation-delay: 0.05s; }
+.status-indicator-bar:nth-child(2) { animation-delay: 0.1s; }
+.status-indicator-bar:nth-child(3) { animation-delay: 0.15s; }
+.status-indicator-bar:nth-child(4) { animation-delay: 0.2s; }
+.status-indicator-bar:nth-child(5) { animation-delay: 0.25s; }
+.status-indicator-bar:nth-child(6) { animation-delay: 0.3s; }
+.status-indicator-bar:nth-child(7) { animation-delay: 0.35s; }
+.status-indicator-bar:nth-child(8) { animation-delay: 0.4s; }
+.status-indicator-bar:nth-child(9) { animation-delay: 0.45s; }
+.status-indicator-bar:nth-child(10) { animation-delay: 0.5s; }
+.status-indicator-bar:nth-child(11) { animation-delay: 0.55s; }
+.status-indicator-bar:nth-child(12) { animation-delay: 0.6s; }
+.status-indicator-bar:nth-child(13) { animation-delay: 0.65s; }
+.status-indicator-bar:nth-child(14) { animation-delay: 0.7s; }
+.status-indicator-bar:nth-child(15) { animation-delay: 0.75s; }
+.status-indicator-bar:nth-child(16) { animation-delay: 0.8s; }
+.status-indicator-bar:nth-child(17) { animation-delay: 0.85s; }
+.status-indicator-bar:nth-child(18) { animation-delay: 0.9s; }
+.status-indicator-bar:nth-child(19) { animation-delay: 0.95s; }
+.status-indicator-bar:nth-child(20) { animation-delay: 1.0s; }
+.status-indicator-bar:nth-child(21) { animation-delay: 1.05s; }
+.status-indicator-bar:nth-child(22) { animation-delay: 1.1s; }
+.status-indicator-bar:nth-child(23) { animation-delay: 1.15s; }
+.status-indicator-bar:nth-child(24) { animation-delay: 1.2s; }
 
 .time-labels-row {
   display: flex;
