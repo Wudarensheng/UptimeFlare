@@ -96,12 +96,12 @@ export default function OverallStatus({
 
   return (
     <>
-      <div className="overall-status-card">
+      <div className={`overall-status-card bg-${statusClass}`}>
         <IconComponent
-          className={`overall-status-icon ${statusClass}`}
-          style={{ width: 28, height: 28 }}
+          className="overall-status-icon text-white"
+          style={{ width: 32, height: 32 }}
         />
-        <span className={`overall-status-text ${statusClass}`}>{statusString}</span>
+        <span className="overall-status-text text-white">{statusString}</span>
       </div>
 
       <div className="last-updated">

@@ -1,10 +1,10 @@
 /* Global styles for modern uptime status page */
 
 :root {
-  --primary-color: #10b981;
-  --success-color: #059669;
-  --warning-color: #f59e0b;
-  --danger-color: #ef4444;
+  --primary-color: #50b83c;
+  --success-color: #50b83c;
+  --warning-color: #f0ad4e;
+  --danger-color: #dc3545;
   --bg-color: #f8f9fa;
   --card-bg: #ffffff;
   --text-primary: #1f2937;
@@ -14,8 +14,19 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-md: 10px;
   --radius-lg: 16px;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --bg-color: #0b1120;
+  --card-bg: #111827;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --success-color: #50b83c;
+  --warning-color: #f0ad4e;
+  --danger-color: #dc3545;
 }
 
 * {
@@ -71,49 +82,38 @@ body {
 .overall-status-card {
   max-width: 1024px;
   margin: 1.5rem auto;
-  padding: 1.25rem 1.5rem;
-  background: var(--card-bg);
+  padding: 1.5rem;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-.overall-status-icon {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+.overall-status-card.bg-success {
+  background: var(--success-color);
 }
 
-.overall-status-icon.success {
-  color: var(--success-color);
+.overall-status-card.bg-warning {
+  background: var(--warning-color);
 }
 
-.overall-status-icon.danger {
-  color: var(--danger-color);
+.overall-status-card.bg-danger {
+  background: var(--danger-color);
 }
 
-.overall-status-icon.warning {
-  color: var(--warning-color);
+.overall-status-icon.text-white {
+  color: #fff;
+}
+
+.overall-status-text.text-white {
+  color: #fff;
 }
 
 .overall-status-text {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 500;
   color: var(--text-primary);
-}
-
-.overall-status-text.success {
-  color: var(--text-primary);
-}
-
-.overall-status-text.danger {
-  color: var(--danger-color);
-}
-
-.overall-status-text.warning {
-  color: var(--warning-color);
 }
 
 /* Group section */
@@ -124,14 +124,10 @@ body {
 }
 
 .group-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 500;
   color: var(--text-primary);
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #1f2937 0%, #6b7280 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin-bottom: 0.5rem;
 }
 
 /* Monitor card */
@@ -145,27 +141,39 @@ body {
 
 /* Monitor item row */
 .monitor-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1.5rem;
-  align-items: center;
-  padding: 0.75rem 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0;
+  gap: 0.5rem;
 }
 
 .monitor-item + .monitor-item {
   border-top: 1px solid var(--border-color);
 }
 
-.monitor-info {
+.monitor-header-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
-.monitor-header {
+.monitor-name-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.monitor-uptime {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--success-color);
+}
+.monitor-uptime.offline {
+  color: var(--danger-color);
+}
+.monitor-uptime.maintenance {
+  color: var(--warning-color);
 }
 
 .status-dot {
@@ -191,8 +199,8 @@ body {
 }
 
 .monitor-name {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
@@ -256,20 +264,24 @@ body {
 .uptime-bars-container {
   display: flex;
   align-items: center;
-  gap: 3px;
-  height: 24px;
+  justify-content: space-between;
+  gap: 2px;
+  height: 36px;
+  width: 100%;
 }
 
 .uptime-bar {
-  width: 6px;
+  flex: 1;
+  min-width: 2px;
   height: 100%;
-  border-radius: 9999px;
-  transition: transform 0.15s ease;
+  border-radius: 10px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
   cursor: pointer;
 }
 
 .uptime-bar:hover {
-  transform: scaleY(1.15);
+  transform: scaleY(1.1);
+  opacity: 0.8;
 }
 
 .uptime-bar.success {
@@ -318,7 +330,7 @@ body {
 /* Footer */
 .footer {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
   color: var(--text-secondary);
   font-size: 0.875rem;
 }
@@ -347,12 +359,12 @@ body {
   }
 
   .monitor-item {
-    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
   .uptime-bars-container {
-    height: 24px;
+    height: 32px;
+    gap: 1px;
   }
 }
 
@@ -443,7 +455,7 @@ body {
 .latency-chart-container {
   margin-top: 0.75rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--bg-color);
   border-radius: 8px;
 }
 

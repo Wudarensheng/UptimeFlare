@@ -73,18 +73,18 @@ export default function DetailBar({
     }
 
     const dayPercent = (((dayMonitorTime - dayDownTime) / dayMonitorTime) * 100).toPrecision(4)
-    const barColor = getColor(dayPercent, false)
+    const dayPercentNum = Number(dayPercent)
     
-    // Map color to class
+    // Map percent to class
     let barClass = 'uptime-bar '
-    if (Number.isNaN(Number(dayPercent))) {
+    if (Number.isNaN(dayPercentNum)) {
       barClass += 'no-data'
-    } else if (barColor === '#059669' || barColor.includes('059669')) {
+    } else if (dayPercentNum >= 99.9) {
       barClass += 'success'
-    } else if (barColor === '#ef4444' || barColor.includes('ef4444') || barColor.includes('b91c1c')) {
-      barClass += 'danger'
-    } else {
+    } else if (dayPercentNum >= 95) {
       barClass += 'warning'
+    } else {
+      barClass += 'danger'
     }
 
     uptimePercentBars.push(
@@ -151,10 +151,9 @@ export default function DetailBar({
       </Modal>
       <Box
         className="uptime-bars-container"
-        visibleFrom="540"
         ref={barRef}
       >
-        {uptimePercentBars.slice(Math.floor(Math.max(9 * 90 - barRect.width, 0) / 9), 90)}
+        {uptimePercentBars}
       </Box>
     </>
   )

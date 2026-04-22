@@ -19,14 +19,13 @@ export default function MonitorDetail({
   if (!state.latency[monitor.id])
     return (
       <div className="monitor-item">
-        <div className="monitor-info">
-          <div className="monitor-header">
-            <div className="status-dot offline" />
+        <div className="monitor-header-row">
+          <div className="monitor-name-container">
             <span className="monitor-name">{monitor.name}</span>
           </div>
-          <Text mt="sm" fw={700}>
-            {t('No data available')}
-          </Text>
+          <div className="monitor-uptime maintenance">
+            {t('No data')}
+          </div>
         </div>
       </div>
     )
@@ -81,24 +80,28 @@ export default function MonitorDetail({
 
   return (
     <div className="monitor-item">
-      <div className="monitor-info">
-        <div className="monitor-header">
-          <div className={statusDotClass} />
+      <div className="monitor-header-row">
+        <div className="monitor-name-container">
           {monitor.tooltip ? (
             <Tooltip label={monitor.tooltip}>{monitorNameElement}</Tooltip>
           ) : (
             monitorNameElement
           )}
         </div>
-        <div className="monitor-tags">
-          <span className={`tag tag-${uptimeColor === '#059669' ? 'green' : uptimeColor === '#ef4444' ? 'red' : 'yellow'}`}>
-            {t('uptime', { percent: uptimePercent })}
-          </span>
+        <div className={`monitor-uptime ${statusClass}`}>
+          {uptimePercent}%
         </div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+      
+      <div className="monitor-bars-wrapper">
         <DetailBar monitor={monitor} state={state} />
       </div>
+
+      <div className="time-labels">
+        <span className="time-label">{t('90 days ago')}</span>
+        <span className="time-label">{t('Today')}</span>
+      </div>
+
       {!monitor.hideLatencyChart && (
         <div className="latency-chart">
           <DetailChart monitor={monitor} state={state} />
